@@ -2,7 +2,8 @@ import Anthropic from "@anthropic-ai/sdk";
 
 const client = new Anthropic(); // reads ANTHROPIC_API_KEY automatically
 
-export async function GET() {
+export async function POST(request: Request) {
+    const {question} =  await request.json();
     const encoder = new TextEncoder();
 
     const body = new ReadableStream({
@@ -11,7 +12,7 @@ export async function GET() {
                 const stream = client.messages.stream({
                     model: "claude-haiku-5-5",
                     max_tokens: 300,
-                    messages: [{role: "user", content: "Explain what a Terms & Conditions document is in 3 sentences."}]
+                    messages: [{role: "user", content: question}]
                 }).on("text", text => {
                     controller.enqueue(encoder.encode(text));
                 })
